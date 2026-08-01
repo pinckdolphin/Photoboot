@@ -1,0 +1,76 @@
+{\rtf1\ansi\ansicpg1252\cocoartf2869
+\cocoatextscaling0\cocoaplatform0{\fonttbl\f0\fswiss\fcharset0 Helvetica;}
+{\colortbl;\red255\green255\blue255;}
+{\*\expandedcolortbl;;}
+\margl1440\margr1440\vieww11520\viewh8400\viewkind0
+\pard\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\pardirnatural\partightenfactor0
+
+\f0\fs24 \cf0 body \{\
+  font-family: Arial, sans-serif;\
+  background-color: #f4f4f9;\
+  text-align: center;\
+  margin: 0;\
+  padding: 20px;\
+\}\
+\
+.booth-container \{\
+  max-width: 600px;\
+  margin: 0 auto;\
+\}\
+\
+.controls \{\
+  margin-bottom: 20px;\
+\}\
+\
+select, button \{\
+  padding: 10px 15px;\
+  font-size: 16px;\
+  margin: 5px;\
+  cursor: pointer;\
+\}\
+\
+.viewfinder-container \{\
+  position: relative;\
+  display: inline-block;\
+  width: 100%;\
+  max-width: 400px;\
+  background: #000;\
+  border-radius: 8px;\
+  overflow: hidden;\
+\}\
+\
+#webcam \{\
+  width: 100%;\
+  transform: scaleX(-1); /* Mirror view for natural interaction */\
+\}\
+\
+#timer \{\
+  position: absolute;\
+  top: 50%;\
+  left: 50%;\
+  transform: translate(-50%, -50%);\
+  font-size: 80px;\
+  color: white;\
+  font-weight: bold;\
+  text-shadow: 2px 2px 8px rgba(0,0,0,0.8);\
+\}\
+\
+.hidden \{\
+  display: none;\
+\}\
+\
+#photo-strip \{\
+  margin-top: 15px;\
+  box-shadow: 0 4px 10px rgba(0,0,0,0.15);\
+  max-width: 100%;\
+\}\
+\
+#download-btn \{\
+  display: inline-block;\
+  margin-top: 15px;\
+  padding: 10px 20px;\
+  background-color: #28a745;\
+  color: white;\
+  text-decoration: none;\
+  border-radius: 5px;\
+\}}
