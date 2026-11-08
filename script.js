@@ -6,8 +6,11 @@ const canvas = document.getElementById('photo-strip');
 const ctx = canvas.getContext('2d');
 const downloadBtn = document.getElementById('download-btn');
 
-// Start Webcam Stream
-navigator.mediaDevices.getUserMedia({ video: true, audio: false })
+// Start Webcam Stream with explicit resolution constraints
+navigator.mediaDevices.getUserMedia({ 
+  video: { width: 640, height: 480 }, 
+  audio: false 
+})
   .then((stream) => {
     video.srcObject = stream;
   })
@@ -18,6 +21,7 @@ navigator.mediaDevices.getUserMedia({ video: true, audio: false })
 
 snapBtn.addEventListener('click', async () => {
   snapBtn.disabled = true;
+  downloadBtn.classList.add('hidden'); // Hide download button while shooting
   const photos = [];
 
   // Take 3 photos with a 3-second countdown each
@@ -53,11 +57,15 @@ function countdown(seconds) {
 
 function capturePhoto() {
   const tempCanvas = document.createElement('canvas');
-  tempCanvas.width = video.videoWidth || 640;
-  tempCanvas.height = video.videoHeight || 480;
+  // Detect actual video layout or fallback to standard 4:3 proportions
+  const vWidth = video.videoWidth || 640;
+  const vHeight = video.videoHeight || 480;
+  
+  tempCanvas.width = vWidth;
+  tempCanvas.height = vHeight;
   const tempCtx = tempCanvas.getContext('2d');
 
-  // Flip horizontally to match camera view
+  // Flip horizontally to match mirrored camera view
   tempCtx.translate(tempCanvas.width, 0);
   tempCtx.scale(-1, 1);
   tempCtx.drawImage(video, 0, 0, tempCanvas.width, tempCanvas.height);
@@ -66,13 +74,19 @@ function capturePhoto() {
 }
 
 function drawPhotoStrip(photos, frameColor) {
-  const photoWidth = 320;
-  const photoHeight = 240;
-  const padding = 20; // Frame border thickness
-  const gap = 15;      // Gap between photos
-  const bottomMargin = 60; // Space for booth brand/date at bottom
+  // Use the dimensions from the first shot to keep aspect ratio perfect
+  const nativeWidth = photos[0].width;
+  const nativeHeight = photos[0].height;
+  
+  // Set output width to 360px and scale height proportionally so nothing stretches
+  const photoWidth = 360;
+  const photoHeight = Math.round((nativeHeight / nativeWidth) * photoWidth);
+  
+  const padding = 24;      // Clean frame border thickness
+  const gap = 16;          // Gap between photos
+  const bottomMargin = 70; // Space for branding at bottom
 
-  // Calculate total canvas dimensions
+  // Calculate total canvas dimensions dynamically
   canvas.width = photoWidth + (padding * 2);
   canvas.height = (photoHeight * photos.length) + (gap * (photos.length - 1)) + (padding * 2) + bottomMargin;
 
@@ -80,7 +94,7 @@ function drawPhotoStrip(photos, frameColor) {
   ctx.fillStyle = frameColor;
   ctx.fillRect(0, 0, canvas.width, canvas.height);
 
-  // 2. Draw Photos onto Canvas
+  // 2. Draw Photos onto Canvas beautifully
   photos.forEach((photoCanvas, index) => {
     const x = padding;
     const y = padding + index * (photoHeight + gap);
@@ -89,11 +103,17 @@ function drawPhotoStrip(photos, frameColor) {
 
   // 3. Add Custom Text/Branding at Bottom
   ctx.fillStyle = (frameColor === '#1a1a1a') ? '#ffffff' : '#000000';
-  ctx.font = 'bold 16px Arial';
+  ctx.font = 'bold 18px Arial';
   ctx.textAlign = 'center';
-  ctx.fillText('PHOTOBOOTH', canvas.width / 2, canvas.height - 25);
+  ctx.fillText('⚡ PHOTOBOOTH ⚡', canvas.width / 2, canvas.height - 30);
 
-  // Prepare Download Link
-  downloadBtn.href = canvas.toDataURL('image/png');
-  downloadBtn.classList.remove('hidden');
+  // 4. Securely Convert Canvas to Downloadable Data URL
+  try {
+    const dataUrl = canvas.toDataURL('image/png');
+    downloadBtn.href = dataUrl;
+    downloadBtn.classList.remove('hidden');
+  } catch (e) {
+    console.error("Canvas export failed:", e);
+    alert("Could not process image download due to a browser restriction. Try using Google Chrome or Firefox.");
+  }
 }
